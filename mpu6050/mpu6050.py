@@ -22,8 +22,18 @@ class MPU6050(object):
         self.i2c = I2C(bus)
         self.i2c.init(mode)
         self.addr = addr
-        self.word = bytearray(2)
+        self.accel_data = [0.0] * 3
+        self.accel_range = 16.0
+        self.accel_rate = 2048.0
+        self.gyro_data = [0.0] * 3
+        self.gyro_range = 2000.0
+        self.gyro_rate = 16.4
+        self.block_buffer = bytearray(6)
+
+        # Wake and initialize the accelerometer and gyro to highest sensitivity.
         self.wake()
+        self._write_reg(0b00011000, ACCEL_CONFIG)
+        self._write_reg(0b00011000, GYRO_CONFIG)
 
     def wake(self):
         """Wake up MPU-6050.
@@ -45,6 +55,18 @@ class MPU6050(object):
         """
         return self.i2c.mem_read(buff, self.addr, src)
 
+    def _read_byte_block(self, buff, start_reg):
+        """Read a chunk of bytes.
+
+        Read 6 consecutive bytes starting fron s
+
+        :param buff: buff: 6 byte buffer for reading data.
+        :param start_reg: Source register to START reading from.
+        :return: 6 bytes of data.
+        """
+        pass
+
+
     def _write_reg(self, data, dest):
         """Write to MPU-6050 register.
 
@@ -52,3 +74,7 @@ class MPU6050(object):
         :param dest: Destination register to be written to.
         """
         self.i2c.mem_write(data, self.addr, dest)
+
+    def change_sensitivity(self, sensitivity):
+        if sensitivity not in (0, 1, 2, 3):
+            return

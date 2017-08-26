@@ -32,3 +32,6 @@ GYRO_ZOUT0 = const(0x47)
 
 # Contains the 6-bit I2C address of the MPU-60X0. Defaults to 0x68
 WHO_AM_I = const(0x68)
+
+btoi = lambda msb, lsb: (msb << 8 | lsb)\
+    if not msb & 0x80 else -(((msb ^ 255) << 8) | (lsb ^ 255) + 1)
